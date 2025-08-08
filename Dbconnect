@@ -1,0 +1,54 @@
+ON DB VM:
+
+sudo wget https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm 
+sudo dnf install mysql80-community-release-el9-1.noarch.rpm -y
+sudo yum install mysql-server -y --nogpgcheck
+mysql --version
+
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+sudo systemctl status mysqld
+
+get password:
+cat /var/log/mysqld.log
+
+k=D)fq#Pq3wu
+
+sudo mysql_secure_installation
+
+
+
+mysql -u root -p
+
+----------------------------
+SHOW DATABASES;
+CREATE DATABASE splunk;
+use splunk;
+SELECT DATABASE();
+
+create table splunkusers (id INT AUTO_INCREMENT PRIMARY KEY,
+name varchar(30),
+company varchar(30));
+
+insert into splunkusers (name, company) values
+('Ram','ibm'),
+('rahim','hcl'),
+('robert','syf');
+
+
+create user 'splunk_user'@'%' identified by 'Splunk@1234';
+grant all privileges on splunk.* to 'splunk_user'@'%';
+flush privileges;
+
+
+-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------
+
+ON Indexer:
+sudo yum install java-21-amazon-corretto-devel
+jre path:
+
+/usr/lib/jvm/jre-21-openjdk
+
+-----------------------------------------------
