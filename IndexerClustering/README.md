@@ -1,6 +1,6 @@
 ![alt text](image-3.png)
 
-
+----
 # SYSTEM Requirements
 | |Indexer|Search Head|
 |----|----|----|
@@ -186,3 +186,4 @@ pass4SymmKey = Hashed_Secret2
 ### Replicated Buckets 
 
 ![alt text](image-2.png)
+
