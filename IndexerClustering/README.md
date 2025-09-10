@@ -1,3 +1,7 @@
+![alt text](image-3.png)
+
+
+
 | |Indexer|Search Head|
 |----|----|----|
 OS|Linux or Windows 64-bit distribution|
