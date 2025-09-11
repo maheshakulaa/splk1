@@ -117,7 +117,7 @@ by the manager
 Run this on #SPLUNK_HOME of Manager node
 
 ```
- splunk edit cluster-config -mode manager -replication_factor 3 -search_factor 2 -secret myclusterpass4symmkey
+ splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 1 -secret myclusterpass4symmkey
 ```
 Above command will create below server.conf config file in 
 
@@ -126,10 +126,11 @@ $SPLUNK_HOME/etc/system/local/server.conf
 [clustering]
 mode = manager
 replication_factor = 2
+search_factor = 1
 pass4SymmKey = Hashed_Secret
 ```
 ### Configuring the Peer Nodes
-Run this on #SPLUNK_HOME of Manager node
+Run this on #SPLUNK_HOME of each Peer node
 
 ```
  splunk edit cluster-config -mode peer -manager_uri https://<<MANAGER IP/HOSTNAME>>:8089 -secret myclusterpass4symmkey -replication_port 9887
@@ -147,7 +148,7 @@ pass4SymmKey = Hashed_Secret
 ```
 ### Configuring the Search Head
 
-Run this on #SPLUNK_HOME of Manager node
+Run this on #SPLUNK_HOME of Search head
 
 ```
  splunk edit cluster-config -mode searchhead -manager_uri https://<<MANAGER IP/HOSTNAME>>:8089 -secret myclusterpass4symmkey
@@ -395,3 +396,27 @@ splunk offline --enforce-counts
 splunk rolling-restart cluster-peers -site-by-site true -site-order site2,site1
 
 ```
+
+## To Replicate data indexer cluster
+```
+[main]
+repFactor = auto
+[history]
+repFactor = auto
+[summary]
+repFactor = auto
+[_internal]
+repFactor = auto
+[_audit]
+repFactor = auto
+[_thefishbucket]
+repFactor = auto
+[_telemetry]
+homePath = $SPLUNK_DB/_telemetry/db
+coldPath = $SPLUNK_DB/_telemetry/colddb
+thawedPath = $SPLUNK_DB/_telemetry/thaweddb
+repFactor = auto
+```
+
+
+
