@@ -1,7 +1,7 @@
 ![alt text](image-3.png)
 
-----
-# SYSTEM Requirements
+
+
 | |Indexer|Search Head|
 |----|----|----|
 OS|Linux or Windows 64-bit distribution|
@@ -184,6 +184,214 @@ pass4SymmKey = Hashed_Secret2
 
 
 ### Replicated Buckets 
-
 ![alt text](image-2.png)
 
+----
+----
+# Multisite Indexer Cluster
+
+![alt text](image-4.png)
+
+Multisite Indexer Cluster offers 
+
+    1. Disaster Recovery
+
+    2. Search Affinity
+        > Search heads Search data that belongs to that site
+        > Reduces Network traffic
+    
+    NOTE: To search across sites 
+
+### Components/attributes for multisite indexer cluster:
+
+1. multisite
+2. site
+3. available_sites --> can be max of 63 sites
+4. site_replication_factor
+5. site_search_factor
+
+![alt text](image-5.png)
+
+total count cannot be less than count of factors (origin + sites )
+
+example: origin:2, site1:2, site2:2, total:3 --> which is invalid
+```
+available sites - site1, site2
+
+    origin=2
++   site2=4
+Total= 4 --> but mentioned as 3 in config which is ivalied
+
+    origin=2
++   site1=4
+Total= 4 --> but mentioned as 3 in config which is ivalied
+
+
+```
+
+## Configure Multisite Manager Node 
+```
+splunk edit cluster-config -mode manager -multisite true -site site1 -available_sites site1,site2 -site_replication_factor origin:1,total:2 -site_search_factor origin:1,total:2 -secret myclusterpass4symmkey
+```
+Above command will create below server.conf config file in  $SPLUNK_HOME/etc/system/local/server.conf
+
+```
+[general]
+site = site1
+
+[clustering]
+multisite = true
+mode = manager
+available_sites = site1,site2
+site_replication_factor = origin:1,total:2
+site_search_factor = origin:1,total:2
+pass4SymmKey = Hashed_Secret
+```
+
+## Configure Multisite Cluster peers
+
+#### On Site1 peers
+```
+splunk edit cluster-config -manager_uri https://<ManagerIP>:8089 -mode peer -site site1 -replication_port 9887 -secret myclusterpass4symmkey
+```
+Above command will create below server.conf config file in  $SPLUNK_HOME/etc/system/local/server.conf
+
+```
+[general]
+site = site1
+
+[clustering]
+mode = slave
+manager_uri= https://<ManagerIP>:8089
+pass4SymmKey = Hashed_Secret
+
+[replication_port://9887]
+```
+
+#### On Site1 peers
+```
+splunk edit cluster-config -manager_uri https://<ManagerIP>:8089 -mode peer -site site2 -replication_port 9887 -secret myclusterpass4symmkey
+```
+Above command will create below server.conf config file in  $SPLUNK_HOME/etc/system/local/server.conf
+
+```
+[general]
+site = site2
+
+[clustering]
+mode = slave
+manager_uri= https://<ManagerIP>:8089
+pass4SymmKey = Hashed_Secret
+
+[replication_port://9887]
+```
+
+## Configure Multisite indexer cluster Search Head 
+```
+splunk edit cluster-config -mode searchhead -manager_uri https://<ManagerIP>:8089 -site site1 secret myclusterpass4symmkey
+```
+Above command will create below server.conf config file in  $SPLUNK_HOME/etc/system/local/server.conf
+
+```
+[general]
+site = site1
+
+[clustering]
+multisite = true 
+mode = searchhead
+manager_uri= https://<ManagerIP>:8089
+pass4SymmKey = Hashed_Secret
+```
+
+#### To disable search affinity 
+Replace -site site1 with -site site0
+
+OR
+
+edit server.conf
+```
+[general]
+site = site0
+
+```
+
+
+
+## Search Affinity
+```
+• In single-site indexer cluster, there is only one set of “primary” searchable buckets that respond to searches
+
+• With multisite, each site can have searchable replicas that respond to searches
+
+• Search affinity (enabled by default)
+
+    >  Search heads have a site association
+
+    >  Searches get as many events as they can from the same site
+
+        > If a searchable bucket exists on the site, it will be the primary bucket for that site
+        > Searches will extend across sites only when they are needed
+        
+    >  Limit the access of each user to only their local search heads
+
+Serch Affinity can be disabledw by assigning site=0 on Search head
+
+site=0 --> is applicabble only to Search head (Not on peers)
+
+When Search affinity is disabled:
+
+    > Spread the search request across indexers on all sites
+    > Will increase WAN traffic
+
+    all sites in the cluster must be in close proximity with very low network latency
+```
+
+### Maintenance Mode in Cluster:
+Maintenance mode halts most bucket fixup activity and prevents frequent rolling of hot buckets. It is useful when performing peer upgrades and other maintenance activities on an indexer cluster. Because it halts critical bucket fixup activity, use maintenance mode only when necessary.
+
+Reference link: https://help.splunk.com/en/splunk-enterprise/administer/manage-indexers-and-indexer-clusters/9.4/manage-the-indexer-cluster/use-maintenance-mode
+
+## Commands for administrating Cluster
+
+### Single site
+Maintenance mode commands
+```
+splunk enable maintenance-mode 
+splunk disable maintenance-mode
+splunk show maintenance-mode
+```
+Below commands should be executed on manager node
+
+```
+# Below two commands automatically invoke maintenance mode
+
+splunk apply cluster-bundle
+splunk rolling-restart cluster-peers
+```
+```
+splunk show cluster-bundle-status [--verbose]
+splunk validate cluster-bundle --check-restart
+splunk rollback cluster-bundle
+splunk show cluster-status [--verbose]
+splunk list excess-buckets [index]
+splunk remove excess-buckets [index]
+```
+
+Below commands should be executed on Peer node
+
+```
+# to bring down a peer temporarily 
+splunk offline 
+
+# to bring down a peer Permanently
+splunk offline --enforce-counts
+
+
+```
+
+
+### Multi site
+```
+splunk rolling-restart cluster-peers -site-by-site true -site-order site2,site1
+
+```
