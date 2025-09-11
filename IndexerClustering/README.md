@@ -269,7 +269,7 @@ pass4SymmKey = Hashed_Secret
 [replication_port://9887]
 ```
 
-#### On Site1 peers
+#### On Site2 peers
 ```
 splunk edit cluster-config -manager_uri https://<ManagerIP>:8089 -mode peer -site site2 -replication_port 9887 -secret myclusterpass4symmkey
 ```
