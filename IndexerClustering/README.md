@@ -418,5 +418,31 @@ thawedPath = $SPLUNK_DB/_telemetry/thaweddb
 repFactor = auto
 ```
 
+----
+----
+To enable 9997 listening port on Peer nodes and disable Web 
+
+![alt text](image-6.png)
+----
+TO set servename in server.conf
+```
+splunk set servername peer1
+splunk set servername peer2
+splunk set servername peer3
+splunk set servername peer4
+```
+this will change the attribute value in server.conf --> general stanza
+
+![alt text](image-7.png)
 
 
+TO set hostname in inputs.conf
+```
+splunk set default-hostname peer1
+splunk set default-hostname peer2
+splunk set default-hostname peer3
+splunk set default-hostname peer4
+```
+
+this will change the attribute value in inputs.conf --> default stanza
+![alt text](image-8.png)
