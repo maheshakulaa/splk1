@@ -115,7 +115,7 @@ splunk  rolling-restart shcluster-members -status 1
 # Building a Search head cluster
 ### Steps:
 1.  Start Splunk on all the nodes
-2.  Initialize SH cluster on all members by execuring below command
+2.  Initialize SH cluster on all members by executing below command
 ```
 splunk init shcluster-config -auth <username>:<password> -mgmt_uri <URI>:<management_port> -replication_port <replication_port> -replication_factor <n> -conf_deploy_fetch_url <URL>:<management_port> -secret <security_key> -shcluster_label <label>
 
@@ -276,6 +276,7 @@ https://help.splunk.com/en/splunk-enterprise/administer/distributed-search/9.3/m
 what is Artifact Reaping?
 
 when to apply Manual Detention on a memeber?
+
 
 
 
