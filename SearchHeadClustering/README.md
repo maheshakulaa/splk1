@@ -129,7 +129,7 @@ splunk init shcluster-config -auth admin:changeme -mgmt_uri https://10.1.1.1:808
 ```
 3.  Select one of the initialized instances to be the first cluster captain. It does not matter which instance you select for this role.
 ```
-splunk bootstrap shcluster-captain –servers_list https://SH2:8089,https://SH3:8089,https://SH4:8089 -auth admin:changeme
+splunk bootstrap shcluster-captain -servers_list "https://SH2:8089,https://SH3:8089,https://SH4:8089" -auth admin:Changeme123
 ```
 
 Optional:
