@@ -104,8 +104,12 @@ Place all the configurations/apps to be pushed to SH memebers in staging locatio
 splunk apply shcluster-bundle -target <member:port> -action stage
 splunk apply shcluster-bundle -target <member:port> -action send
 
-# To restart SH Cluster memebers
+# To restart SH Cluster memebers (RUN ON ANY MEMBER OF SHC)
 splunk rolling-restart shcluster-members
+
+# TO CHECK STATUS OF ROLLING RESTART
+splunk  rolling-restart shcluster-members -status 1
+
 ```
 ----
 # Building a Search head cluster
@@ -250,8 +254,12 @@ splunk clean kvstore -local
 splunk resync kvstore [-source <KVstore_source_GUID>]
 
 
+TO TAKE BACKUP AND RESTORE OF KVSTORE:
+https://docs.splunk.com/Documentation/Splunk/9.4.2/Admin/BackupKVstore
 
 ```
+https://docs.splunk.com/Documentation/Splunk/9.4.2/Admin/BackupKVstore
+
 https://help.splunk.com/en/splunk-enterprise/administer/distributed-search/9.3/manage-search-head-clustering/use-static-captain-to-recover-from-loss-of-majority
 
 
