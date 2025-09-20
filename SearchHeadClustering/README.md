@@ -37,7 +37,7 @@ To overcome
     -   All Scheduled searhes are delegated to members of cluster
     -   scheduler on enabled only on captain
     -   Shares Knowledge bundle with peer nodes.
-    -   Makesures replication of search artifactes of saved searhces are replicated to memeber as per replication factor
+    -   Makesures replication of search artifactes of scheduled searhces are replicated to memeber as per replication factor
     -   <b>Note</b>: adhoc searches/realtime searche artifacts are not replicated to other members. When user tries to fetch those results/artifacts search head will proxy to the memeber where artifacts are generated/stored.
     -   Captain functions as a source control server
         -   Members replicate changes from/to captain every `5 seconds` (replication cycle)
@@ -127,6 +127,27 @@ splunk init shcluster-config -auth admin:changeme -mgmt_uri https://10.1.1.1:808
 ```
 splunk bootstrap shcluster-captain –servers_list https://SH2:8089,https://SH3:8089,https://SH4:8089 -auth admin:changeme
 ```
+
+Optional:
+```
+In future if you want to add or remove nodes from existing cluster
+---------------- TO ADD -----------------
+#command to run on new memeber
+splunk add shcluster-member -current_member_uri <URI>:<management_port>
+
+#Command to run from existig memener to add a new memeber
+splunk add shcluster-member -new_member_uri <URI>:<management_port>
+
+
+---------------- TO REMOVE -----------------
+#To remove current node (SH3)
+splunk remove shcluster-member
+
+#To remove SH3 from SH2
+splunk remove shcluster-member -mgmt_uri https://SH3:8089
+```
+
+
 
 4.  To check the overall status of your search head cluster, run this command from any member
 ```
